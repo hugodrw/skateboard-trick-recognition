@@ -32,4 +32,4 @@ gmm_n_components = 3
 
 # PATHS
 video_descriptors_path = join('out', 'video_descriptors')
-data_dir = 'data'
+data_dir = 'data_avi_hd'

@@ -9,12 +9,14 @@ from video_representation import VideoRepresentation
 from transforms import *
 from settings import *
 from visualize import *
+from tqdm import tqdm
 
 
 def main(already_computed_descriptors=False):
     try:
-        os.mkdirs(video_descriptors_path)
-    except:
+        os.makedirs(video_descriptors_path)
+    except Exception as error:
+        print('error making dr: ', error)
         pass
 
     train_videos = []
@@ -25,9 +27,10 @@ def main(already_computed_descriptors=False):
         for directory in next(os.walk(data_dir))[1]:
             directory_path = join(data_dir, directory)
             print(f'\n________EXTRACTING DESCRIPTORS FROM {directory_path}')
-            for filename in os.listdir(directory_path):
+            for filename in tqdm(os.listdir(directory_path)):
                 filepath = join(directory_path, filename)
                 if '.avi' in filename and os.path.isfile(filepath):
+                    print('file found')
                     # task 1
                     trajectories_list = trajectories_from_video(filepath)
                     # task 2
@@ -39,7 +42,13 @@ def main(already_computed_descriptors=False):
     with open(join(data_dir, 'train.txt'), 'r') as train_f:
         train_lines = train_f.readlines()
     for l in train_lines:
-        filepath, label = l.split()
+        # Handle skateboard trick file paths
+        label = 0
+        filepath = l
+        if 'Kickflip' in l:
+            label = 1
+        # filepath, label = l.split() junp.avi 1
+        
         descriptor_path = join(video_descriptors_path,
                                f'{filepath.split("/")[1].replace(".avi", "-descriptors.txt")}')
         video_representation = VideoRepresentation(filepath, np.loadtxt(descriptor_path), label)
@@ -80,7 +89,12 @@ def main(already_computed_descriptors=False):
     with open(join(data_dir, 'test.txt'), 'r') as test_f:
         test_lines = test_f.readlines()
     for l in test_lines:
-        filepath, label = l.split()
+        # Handle skateboard trick file paths
+        label = 0
+        filepath = l
+        if 'Kickflip' in l:
+            label = 1
+        # filepath, label = l.split() junp.avi 1
         descriptor_path = join(video_descriptors_path,
                                f'{filepath.split("/")[1].replace(".avi", "-descriptors.txt")}')
         video_representation = VideoRepresentation(filepath, np.loadtxt(descriptor_path), label)

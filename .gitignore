@@ -1,0 +1,7 @@
+# BEGIN: /Users/hugoderohanwillner/Documents/MSc AI/S1 Courses/Visual Computing/Project/skateboard-trick-recognition/.gitignore
+data_mov/
+data_avi_sd/
+out/
+Tricks/
+__pycache__/
+# END: /Users/hugoderohanwillner/Documents/MSc AI/S1 Courses/Visual Computing/Project/skateboard-trick-recognition/.gitignore
