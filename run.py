@@ -16,7 +16,6 @@ def main(already_computed_descriptors=False):
     try:
         os.makedirs(video_descriptors_path)
     except Exception as error:
-        print('error making dr: ', error)
         pass
 
     train_videos = []
@@ -24,13 +23,20 @@ def main(already_computed_descriptors=False):
 
     # COMPUTE DESCRIPTORS
     if not already_computed_descriptors:
-        for directory in next(os.walk(data_dir))[1]:
+        for id, directory in enumerate(next(os.walk(data_dir))[1]):
+            if id == 0: # debugging, skip ollie directory
+                continue
             directory_path = join(data_dir, directory)
             print(f'\n________EXTRACTING DESCRIPTORS FROM {directory_path}')
             for filename in tqdm(os.listdir(directory_path)):
                 filepath = join(directory_path, filename)
-                if '.avi' in filename and os.path.isfile(filepath):
-                    print('file found')
+                # check if file already exits
+                descriptors_txt_path = os.path.join(video_descriptors_path, f'{filename.split(".")[0]}-descriptors.txt')
+                descriptor_found = False
+                if os.path.isfile(descriptors_txt_path):
+                    print('descriptor file already exists: ', descriptors_txt_path)
+                    descriptor_found = True
+                if '.avi' in filename and os.path.isfile(filepath) and not descriptor_found:
                     # task 1
                     trajectories_list = trajectories_from_video(filepath)
                     # task 2
@@ -44,7 +50,7 @@ def main(already_computed_descriptors=False):
     for l in train_lines:
         # Handle skateboard trick file paths
         label = 0
-        filepath = l
+        filepath = l.replace('\n', '')
         if 'Kickflip' in l:
             label = 1
         # filepath, label = l.split() junp.avi 1
@@ -91,7 +97,7 @@ def main(already_computed_descriptors=False):
     for l in test_lines:
         # Handle skateboard trick file paths
         label = 0
-        filepath = l
+        filepath = l.replace('\n', '')
         if 'Kickflip' in l:
             label = 1
         # filepath, label = l.split() junp.avi 1
@@ -123,6 +129,5 @@ def main(already_computed_descriptors=False):
 
 if __name__ == '__main__':
     # to test trajectories on a single video
-    # trajectories_from_video('data/UnevenBars/v_UnevenBars_g01_c01.avi', vis_flow=False, vis_trajectories=True)
-
-    main(already_computed_descriptors=False)
+    # trajectories_from_video('data_avi_hd/Ollie/Ollie20.avi', vis_flow=False, vis_trajectories=True)
+    main(already_computed_descriptors=True)
